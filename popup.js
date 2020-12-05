@@ -5,187 +5,6 @@ firebase.initializeApp(config);
 var database = firebase.database();
 // ###########################################################################################3
 
-
-
-function httpGet(theUrl) {
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open("GET", theUrl, false); // false for synchronous request
-    xmlHttp.send(null);
-    return xmlHttp.responseText;
-}
-
-function checkHebrew(str) {
-    var HebrewLetters = "אבגדהוזחטיכלמנסעפצקרשתךףץןם";
-    for (var i = 0; i < HebrewLetters.length; i++) {
-        if (str.includes(HebrewLetters.charAt(i))) {
-            return true;
-        }
-    }
-    return false;
-}
-
-function translateFunction() {
-    var text = document.getElementById("translateInput").value;
-    document.getElementById("result").innerHTML = "";
-
-    text = text.replace(".", "");
-    var splitSpa = text.split(" ");
-    for (var i = splitSpa.length - 1; i >= 0; i--) {
-        if (splitSpa[i] === "") {
-            splitSpa.splice(i, 1);
-        }
-    }
-    var joinSpa = splitSpa.join('%20');
-    var morfixLink = "https://www.morfix.co.il/" + joinSpa;
-    document.getElementById("MorfixHref").setAttribute('href', morfixLink);
-    var googleTranslateLink;
-    if (checkHebrew(joinSpa)) {
-        googleTranslateLink = "https://translate.google.co.il/?hl=iw#view=home&op=translate&sl=iw&tl=en&text=" + joinSpa;
-    } else {
-        googleTranslateLink = "https://translate.google.co.il/?hl=iw#view=home&op=translate&sl=en&tl=iw&text=" + joinSpa;
-    }
-    document.getElementById("GoogleTranslateHref").setAttribute('href', googleTranslateLink);
-
-    var morfixCode = httpGet(morfixLink);
-
-    if (morfixCode.includes('class="wiki_to_he">')) {
-        var res = morfixCode.split('class="wiki_to_he">');
-        res = res[1].split('</div>');
-        var result = res[0];
-        document.getElementById("result").innerHTML += result;
-    }
-    if (morfixCode.includes('class="wiki_to_en">')) {
-        var res = morfixCode.split('class="wiki_to_en">');
-        res = res[1].split('</div>');
-        var result = res[0];
-        document.getElementById("result").innerHTML += result;
-    }
-    if (morfixCode.includes('class="normal_translation_div">')) {
-        // document.getElementById("result").innerHTML += "<h3>" + word + "</h3> (" + word2 + ")<br>";
-        // document.getElementById("result").innerHTML += word3 + "<br>";
-
-        var count = (morfixCode.match(/class="normal_translation_div">/g) || []).length;
-        for (var i = 1; i <= count; i++) {
-
-            if (i != 1) {
-                document.getElementById("result").innerHTML += "------------------------------------";
-            }
-
-            var wordsLeftSide, word = "", word2 = "", word3 = "";
-            if (morfixCode.includes('row Translation_divTop_enTohe')) {
-                wordsLeftSide = morfixCode.split('row Translation_divTop_enTohe');
-
-                if (wordsLeftSide[i].includes('class="Translation_spTop_enTohe">')) {
-                    word = wordsLeftSide[i].split('class="Translation_spTop_enTohe">');
-                    word = word[1];
-                    word = word.split("</span>");
-                    word = word[0];
-                }
-
-                if (wordsLeftSide[i].includes('class="Translation_sp2Top_enTohe">')) {
-                    word2 = wordsLeftSide[i].split('class="Translation_sp2Top_enTohe">');
-                    word2 = word2[1];
-                    word2 = word2.split("</span>");
-                    word2 = word2[0];
-                }
-
-                if (wordsLeftSide[i].includes('class="Translation_div2center_enTohe">')) {
-                    word3 = wordsLeftSide[i].split('class="Translation_div2center_enTohe">');
-                    word3 = word3[1];
-                    word3 = word3.split("</div>");
-                    word3 = word3[0];
-                }
-            } else if (morfixCode.includes('row Translation_divTop_heToen')) {
-                wordsLeftSide = morfixCode.split('row Translation_divTop_heToen');
-
-                if (wordsLeftSide[i].includes('class="Translation_spTop_heToen">')) {
-                    word = wordsLeftSide[i].split('class="Translation_spTop_heToen">');
-                    word = word[1];
-                    word = word.split("</span>");
-                    word = word[0];
-                }
-
-                if (wordsLeftSide[i].includes('class="Translation_sp2Top_heToen">')) {
-                    word2 = wordsLeftSide[i].split('class="Translation_sp2Top_heToen">');
-                    word2 = word2[1];
-                    word2 = word2.split("</span>");
-                    word2 = word2[0];
-                }
-
-                if (word2.includes("&#39;")) {
-                    word2 = word2.replace("&#39;", "'");
-                }
-
-            }
-
-
-
-            var tbl = document.createElement('table');
-            // tbl.style.width = '100%';
-            // tbl.setAttribute('border', '1');
-            var tbdy = document.createElement('tbody');
-            var tr = document.createElement('tr');
-            var td = document.createElement('td');
-            var h3 = document.createElement('h3');
-            h3.style.padding = "0px";
-            h3.style.margin = "0px";
-            h3.innerHTML = word;
-            td.appendChild(h3);
-            tr.appendChild(td);
-
-            if (word2 != "") {
-                var td1 = document.createElement('td');
-                td1.append("(" + word2 + ")");
-                td1.align = "left";
-                tr.appendChild(td1);
-            }
-            tbdy.appendChild(tr);
-
-            var tr1 = document.createElement('tr');
-            var td2 = document.createElement('td');
-            td2.colSpan = "2";
-            td2.append(word3);
-            tr1.appendChild(td2);
-            tbdy.appendChild(tr1);
-
-            tbl.appendChild(tbdy);
-            document.getElementById("result").appendChild((tbl));
-
-
-            var res = morfixCode.split('class="normal_translation_div">');
-            res = res[i].split('</div>');
-            var result = res[0];
-            result.replace("<span class='clearOutputLanguageMeaningsString'>", "");
-            result.replace("</span>", "");
-            document.getElementById("result").innerHTML += "<h3>" + result + "</h3>";
-
-        }
-    } else {
-        if (document.getElementById("result").innerHTML == "") {
-            document.getElementById("result").innerHTML = "No dictionary translations found";
-        }
-    }
-
-}
-
-
-//--------------------------------------------------------------------------------------
-chrome.tabs.executeScript({
-    code: "window.getSelection().toString();"
-}, function (selection) {
-    if (selection != undefined && selection != "") {
-        var text = "";
-        chrome.tabs.getSelected(null, function (tab) {
-            text += selection[0];
-            document.getElementById("translateInput").value = text;
-            translateFunction();
-        });
-
-    }
-});
-//--------------------------------------------------------------------------------------
-
-
 function updateDefault() {
     var num = 1;
     var leadsRef = database.ref('/');
@@ -437,3 +256,183 @@ document.getElementById("addBtn").addEventListener('click', function () {
     }
 
 });
+
+
+// get the current selected text and translate it.
+//--------------------------------------------------------------------------------------
+chrome.tabs.executeScript({
+    code: "window.getSelection().toString();"
+}, function (selection) {
+    if (selection != undefined && selection != "") {
+        var text = "";
+        chrome.tabs.getSelected(null, function (tab) {
+            text += selection[0];
+            document.getElementById("translateInput").value = text;
+            translateFunction();
+        });
+
+    }
+});
+//--------------------------------------------------------------------------------------
+
+
+function httpGet(theUrl) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open("GET", theUrl, false); // false for synchronous request
+    xmlHttp.send(null);
+    return xmlHttp.responseText;
+}
+
+function checkHebrew(str) {
+    var HebrewLetters = "אבגדהוזחטיכלמנסעפצקרשתךףץןם";
+    for (var i = 0; i < HebrewLetters.length; i++) {
+        if (str.includes(HebrewLetters.charAt(i))) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function translateFunction() {
+    var text = document.getElementById("translateInput").value;
+    document.getElementById("result").innerHTML = "";
+
+    text = text.replace(".", "");
+    var splitSpa = text.split(" ");
+    for (var i = splitSpa.length - 1; i >= 0; i--) {
+        if (splitSpa[i] === "") {
+            splitSpa.splice(i, 1);
+        }
+    }
+    var joinSpa = splitSpa.join('%20');
+    var morfixLink = "https://www.morfix.co.il/" + joinSpa;
+    document.getElementById("MorfixHref").setAttribute('href', morfixLink);
+    var googleTranslateLink;
+    if (checkHebrew(joinSpa)) {
+        googleTranslateLink = "https://translate.google.co.il/?hl=iw#view=home&op=translate&sl=iw&tl=en&text=" + joinSpa;
+    } else {
+        googleTranslateLink = "https://translate.google.co.il/?hl=iw#view=home&op=translate&sl=en&tl=iw&text=" + joinSpa;
+    }
+    document.getElementById("GoogleTranslateHref").setAttribute('href', googleTranslateLink);
+
+    var morfixCode = httpGet(morfixLink);
+
+    if (morfixCode.includes('class="wiki_to_he">')) {
+        var res = morfixCode.split('class="wiki_to_he">');
+        res = res[1].split('</div>');
+        var result = res[0];
+        document.getElementById("result").innerHTML += result;
+    }
+    if (morfixCode.includes('class="wiki_to_en">')) {
+        var res = morfixCode.split('class="wiki_to_en">');
+        res = res[1].split('</div>');
+        var result = res[0];
+        document.getElementById("result").innerHTML += result;
+    }
+    if (morfixCode.includes('class="normal_translation_div">')) {
+        // document.getElementById("result").innerHTML += "<h3>" + word + "</h3> (" + word2 + ")<br>";
+        // document.getElementById("result").innerHTML += word3 + "<br>";
+
+        var count = (morfixCode.match(/class="normal_translation_div">/g) || []).length;
+        for (var i = 1; i <= count; i++) {
+
+            if (i != 1) {
+                document.getElementById("result").innerHTML += "------------------------------------";
+            }
+
+            var wordsLeftSide, word = "", word2 = "", word3 = "";
+            if (morfixCode.includes('row Translation_divTop_enTohe')) {
+                wordsLeftSide = morfixCode.split('row Translation_divTop_enTohe');
+
+                if (wordsLeftSide[i].includes('class="Translation_spTop_enTohe">')) {
+                    word = wordsLeftSide[i].split('class="Translation_spTop_enTohe">');
+                    word = word[1];
+                    word = word.split("</span>");
+                    word = word[0];
+                }
+
+                if (wordsLeftSide[i].includes('class="Translation_sp2Top_enTohe">')) {
+                    word2 = wordsLeftSide[i].split('class="Translation_sp2Top_enTohe">');
+                    word2 = word2[1];
+                    word2 = word2.split("</span>");
+                    word2 = word2[0];
+                }
+
+                if (wordsLeftSide[i].includes('class="Translation_div2center_enTohe">')) {
+                    word3 = wordsLeftSide[i].split('class="Translation_div2center_enTohe">');
+                    word3 = word3[1];
+                    word3 = word3.split("</div>");
+                    word3 = word3[0];
+                }
+            } else if (morfixCode.includes('row Translation_divTop_heToen')) {
+                wordsLeftSide = morfixCode.split('row Translation_divTop_heToen');
+
+                if (wordsLeftSide[i].includes('class="Translation_spTop_heToen">')) {
+                    word = wordsLeftSide[i].split('class="Translation_spTop_heToen">');
+                    word = word[1];
+                    word = word.split("</span>");
+                    word = word[0];
+                }
+
+                if (wordsLeftSide[i].includes('class="Translation_sp2Top_heToen">')) {
+                    word2 = wordsLeftSide[i].split('class="Translation_sp2Top_heToen">');
+                    word2 = word2[1];
+                    word2 = word2.split("</span>");
+                    word2 = word2[0];
+                }
+
+                if (word2.includes("&#39;")) {
+                    word2 = word2.replace("&#39;", "'");
+                }
+
+            }
+
+
+
+            var tbl = document.createElement('table');
+            // tbl.style.width = '100%';
+            // tbl.setAttribute('border', '1');
+            var tbdy = document.createElement('tbody');
+            var tr = document.createElement('tr');
+            var td = document.createElement('td');
+            var h3 = document.createElement('h3');
+            h3.style.padding = "0px";
+            h3.style.margin = "0px";
+            h3.innerHTML = word;
+            td.appendChild(h3);
+            tr.appendChild(td);
+
+            if (word2 != "") {
+                var td1 = document.createElement('td');
+                td1.append("(" + word2 + ")");
+                td1.align = "left";
+                tr.appendChild(td1);
+            }
+            tbdy.appendChild(tr);
+
+            var tr1 = document.createElement('tr');
+            var td2 = document.createElement('td');
+            td2.colSpan = "2";
+            td2.append(word3);
+            tr1.appendChild(td2);
+            tbdy.appendChild(tr1);
+
+            tbl.appendChild(tbdy);
+            document.getElementById("result").appendChild((tbl));
+
+
+            var res = morfixCode.split('class="normal_translation_div">');
+            res = res[i].split('</div>');
+            var result = res[0];
+            result.replace("<span class='clearOutputLanguageMeaningsString'>", "");
+            result.replace("</span>", "");
+            document.getElementById("result").innerHTML += "<h3>" + result + "</h3>";
+
+        }
+    } else {
+        if (document.getElementById("result").innerHTML == "") {
+            document.getElementById("result").innerHTML = "No dictionary translations found";
+        }
+    }
+
+}
