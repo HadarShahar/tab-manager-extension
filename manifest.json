@@ -1,0 +1,18 @@
+{
+  "manifest_version": 2,
+  "name": "Tab Manager & Morfix Translator",
+  "version": "1.0",
+  "description": "Tab Manager & Morfix Translator",
+  "content_security_policy": "script-src 'self' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com; object-src 'self' https://apis.google.com",
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "identity",
+    "identity.email",
+    "<all_urls>"
+  ]
+}

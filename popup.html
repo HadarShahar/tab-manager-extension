@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Tab Manager & Morfix Translator</title>
+
+  <script src="https://www.gstatic.com/firebasejs/5.8.3/firebase.js"></script>
+
+  <style>
+    #textDiv {
+      /* height: 150px; */
+      width: 340px;
+      /* overflow: visible; */
+    }
+
+
+    .save {
+      background-color: blue;
+      color: white;
+      /* border: 2px solid black; */
+    }
+
+    .save:hover {
+      background-color: white;
+      color: blue;
+    }
+
+    .open {
+      /* background-color: white;
+        color:blue; */
+      /* border: 2px solid black; */
+      background-color: blue;
+      color: white;
+    }
+
+    .open:hover {
+      /* background-color: blue;
+        color:white; */
+      background-color: white;
+      color: blue;
+    }
+
+    .show {
+      background-color: blue;
+      color: white;
+      /* border: 2px solid black; */
+    }
+
+    .show:hover {
+      background-color: white;
+      color: blue;
+    }
+
+    .delete {
+      background-color: red;
+      color: white;
+    }
+
+    .delete:hover {
+      background-color: white;
+      color: red;
+    }
+
+    .addBtn {
+      background-color: black;
+      color: white;
+    }
+
+    .addBtn:hover {
+      background-color: white;
+      color: black;
+    }
+
+    .inputs {
+      width: 80px;
+    }
+
+    #result {
+      font-size: 15px;
+    }
+
+    /* #table1row {
+        border-collapse: collapse;
+        border-spacing: 0;
+      } */
+
+    .topTd {
+      vertical-align: top;
+    }
+
+
+    h3 {
+      padding: 0px;
+      margin: 0px;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 4px;
+      bottom: 3px;
+      background-color: white;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    input:checked+.slider {
+      background-color: #2196F3;
+    }
+
+    input:focus+.slider {
+      box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked+.slider:before {
+      -webkit-transform: translateX(26px);
+      -ms-transform: translateX(26px);
+      transform: translateX(26px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+      border-radius: 34px;
+    }
+
+    .slider.round:before {
+      border-radius: 50%;
+    }
+
+    .hiddenElements {
+      visibility: hidden;
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="textDiv" align="center">
+
+    <table cellspacing="10" id="table1row">
+      <tr>
+        <td id="hiddenP">
+          More options:
+        </td>
+        <td>
+          <label class="switch">
+            <input type="checkbox" id="switchBtnLinks">
+            <span class="slider round"></span>
+          </label>
+        </td>
+        <td class="hiddenElements">
+          <h3>Save as: </h3>
+        </td>
+        <td class="hiddenElements"><input type="text" class="inputs" id="addInput">
+          <button class="addBtn" id="addBtn">save current links</button></td>
+
+        <td><input type="text" class="inputs" id="translateInput">
+          <button class="addBtn" id="translateBtn">translate</button></td>
+      </tr>
+    </table>
+    <table>
+      <tr>
+        <td class="topTd" align="left">
+          <!-- <div align="left"> -->
+          <table id="tableBtns">
+          </table>
+          <!-- </div> -->
+        </td>
+        <td class="topTd" align="right">
+          <div id="resultDiv" align="center">
+            <!-- <span id="result"></span> -->
+            <div id="result"></div>
+
+            <br><br>
+            <h3>Open in:</h3>
+            <table cellspacing="0">
+              <tr>
+                <td><a href="https://www.morfix.co.il/" id="MorfixHref" target="_blank">Morifx</a></td>
+                <td>
+                  <h3> / </h3>
+                </td>
+                <td><a href="https://translate.google.co.il/?hl=iw" id="GoogleTranslateHref" target="_blank">Google
+                    Translate</a></td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+  </div>
+
+  <span id="textSpan" class="hiddenElements"></span>
+  <div id="testDiv" align="center" class="hiddenElements"></div>
+
+  <script src="firebaseConfig.js"></script>
+  <script src="popup.js"></script>
+</body>
+
+</html>
